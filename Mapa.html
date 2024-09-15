@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mapa con Coordenadas desde Firebase</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+      #map {
+        height: 500px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script>
+     // Configuración de Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyBMvND1Oa-r2XeLgsHDBtcY7SkLGbHYLfc",
+        authDomain: "proyecto-de-grado-v2.firebaseapp.com",
+        databaseURL: "https://proyecto-de-grado-v2-default-rtdb.firebaseio.com",
+        projectId: "proyecto-de-grado-v2",
+        storageBucket: "proyecto-de-grado-v2.appspot.com",
+        messagingSenderId: "694856379130",
+        appId: "1:694856379130:web:fc9906ea111c93714b3743"
+      };
+
+      // Inicializa Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+
+      // Inicializar el mapa en Bogotá
+      var map = L.map('map').setView([4.630477, -74.083623], 15); // Usamos las coordenadas de la Universidad Distrital como centro inicial y un zoom más cercano (15)
+
+      // Cargar la capa de OpenStreetMap
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      var circle; // Variable para el círculo de alerta
+
+      // Leer los datos directamente desde la raíz de Firebase
+      db.ref().on('value', (snapshot) => {
+        const data = snapshot.val();
+        
+        // Asegúrate de que 'latitud' y 'longitud' existan
+        const latitud = data ? data.Latitud || 4.630477 : 4.630477; // Coordenada de la Universidad Distrital
+        const longitud = data ? data.Longitud || -74.083623 : -74.083623; // Coordenada de la Universidad Distrital
+        const nivelDeAlerta = data ? data.nivelDeAlerta : 'sin alerta'; // Obtener el nivel de alerta
+
+        // Mostrar las coordenadas y el nivel de alerta en la consola para verificación
+        console.log("Coordenadas obtenidas:", latitud, longitud);
+        console.log("Nivel de Alerta:", nivelDeAlerta);
+
+        // Si el nivel de alerta es "alerta roja", dibujar el círculo
+        if (nivelDeAlerta === "alerta roja") {
+          // Si ya existe un círculo en el mapa, eliminarlo antes de agregar otro
+          if (circle) {
+            map.removeLayer(circle);
+          }
+
+          // Crear un círculo rojo para el área de afectación
+          circle = L.circle([latitud, longitud], {
+  color: 'red',
+  fillColor: '#f03',
+  fillOpacity: 0.5,
+  radius: 500 // Radio de 500 metros para un área pequeña
+}).addTo(map);
+
+          // Centrar el mapa en las coordenadas del sensor
+          map.setView([latitud, longitud], 15); // Centrar el mapa en las coordenadas de la Universidad Distrital
+        } else {
+          // Si no hay alerta roja y ya hay un círculo, eliminarlo
+          if (circle) {
+            map.removeLayer(circle);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
