@@ -50,7 +50,7 @@
         // Asegúrate de que 'latitud' y 'longitud' existan
         const latitud = data ? data.Latitud || 4.630477 : 4.630477; // Coordenada de la Universidad Distrital
         const longitud = data ? data.Longitud || -74.083623 : -74.083623; // Coordenada de la Universidad Distrital
-        const nivelDeAlerta = data ? data.nivelDeAlerta : 'sin alerta'; // Obtener el nivel de alerta
+        const nivelDeAlerta = data ? parseInt(data.nivelDeAlerta) : 0;
 
         // Mostrar las coordenadas y el nivel de alerta en la consola para verificación
         console.log("Coordenadas obtenidas:", latitud, longitud);
