@@ -33,7 +33,7 @@
       const db = firebase.database();
 
       // Inicializar el mapa en Bogotá
-      var map = L.map('map').setView([4.630477, -74.083623], 15); // Usamos las coordenadas de la Universidad Distrital como centro inicial y un zoom más cercano (15)
+      var map = L.map('map').setView([4.630477, -74.083623], 15); // Usamos las coordenadas de la distri
 
       // Cargar la capa de OpenStreetMap
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -47,7 +47,7 @@
       db.ref().on('value', (snapshot) => {
         const data = snapshot.val();
         
-        // Asegúrate de que 'latitud' y 'longitud' existan
+       
         const latitud = data ? data.Latitud || 4.630477 : 4.630477; // Coordenada de la Universidad Distrital
         const longitud = data ? data.Longitud || -74.083623 : -74.083623; // Coordenada de la Universidad Distrital
         const nivelDeAlerta = data ? parseInt(data.nivelDeAlerta) : 0;
@@ -56,14 +56,14 @@
         console.log("Coordenadas obtenidas:", latitud, longitud);
         console.log("Nivel de Alerta:", nivelDeAlerta);
 
-        // Si el nivel de alerta es "alerta roja", dibujar el círculo
+        // Si el nivel de alerta es 3, dibujar el círculo
         if (nivelDeAlerta === 3) {
-          // Si ya existe un círculo en el mapa, eliminarlo antes de agregar otro
+          
           if (circle) {
             map.removeLayer(circle);
           }
 
-          // Crear un círculo rojo para el área de afectación
+          // Crear un círculo rojo para el posible área de afectación
           circle = L.circle([latitud, longitud], {
   color: 'red',
   fillColor: '#f03',
